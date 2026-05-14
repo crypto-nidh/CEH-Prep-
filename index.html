@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEH Exam Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #050a0f;
+            --surface: #0a1520;
+            --card: #0d1e2e;
+            --border: #1a3a5c;
+            --accent: #00d4ff;
+            --accent2: #ff6b35;
+            --green: #00ff88;
+            --red: #ff3860;
+            --text: #c8dde8;
+            --muted: #4a6a7a;
+            --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* Scanline overlay */
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient( 0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+        /* Grid background */
+        
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px 30px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+        }
+        
+        .logo-text {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(28px, 5vw, 52px);
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: var(--accent);
+            text-shadow: var(--glow), 0 0 60px rgba(0, 212, 255, 0.2);
+            animation: flicker 8s infinite;
+        }
+        
+        .logo-text span {
+            color: var(--accent2);
+        }
+        
+        @keyframes flicker {
+            0%,
+            94%,
+            96%,
+            100% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 0.85;
+            }
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: var(--muted);
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+        /* Stats bar */
+        
+        .stats-bar {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-val {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-val.correct {
+            color: var(--green);
+        }
+        
+        .stat-val.wrong {
+            color: var(--red);
+        }
+        
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        /* Progress bar */
+        
+        .progress-wrap {
+            position: relative;
+            z-index: 10;
+            height: 3px;
+            background: var(--border);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        /* Main area */
+        
+        main {
+            position: relative;
+            z-index: 10;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+        /* Question card */
+        
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 36px;
+            margin-bottom: 24px;
+            position: relative;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent), transparent);
+        }
+        
+        .q-meta {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            opacity: 0.7;
+        }
+        
+        .q-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.6;
+            color: #e8f4ff;
+            margin-bottom: 28px;
+            letter-spacing: 0.3px;
+        }
+        /* Options */
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: left;
+            color: var(--text);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .option:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.05);
+        }
+        
+        .option:hover:not(:disabled)::before {
+            opacity: 1;
+        }
+        
+        .opt-key {
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 22px;
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+        
+        .option.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.08);
+        }
+        
+        .option.correct {
+            border-color: var(--green) !important;
+            background: rgba(0, 255, 136, 0.08) !important;
+            color: var(--green) !important;
+        }
+        
+        .option.correct .opt-key {
+            color: var(--green);
+        }
+        
+        .option.wrong {
+            border-color: var(--red) !important;
+            background: rgba(255, 56, 96, 0.08) !important;
+            color: var(--red) !important;
+        }
+        
+        .option.wrong .opt-key {
+            color: var(--red);
+        }
+        
+        .option:disabled {
+            cursor: default;
+        }
+        /* Explanation */
+        
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 18px 20px;
+            background: rgba(0, 212, 255, 0.04);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-left: 3px solid var(--accent);
+            border-radius: 2px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .exp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        /* Result badge */
+        
+        .result-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        .result-badge.show {
+            display: flex;
+        }
+        
+        .result-badge.correct-badge {
+            color: var(--green);
+        }
+        
+        .result-badge.wrong-badge {
+            color: var(--red);
+        }
+        /* Nav buttons */
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 12px 28px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--accent);
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            color: var(--bg);
+        }
+        
+        .btn:hover::before {
+            transform: translateX(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+        
+        .btn:disabled:hover {
+            color: var(--accent);
+        }
+        
+        .btn:disabled::before {
+            display: none;
+        }
+        
+        .btn-danger {
+            border-color: var(--accent2);
+            color: var(--accent2);
+        }
+        
+        .btn-danger::before {
+            background: var(--accent2);
+        }
+        
+        .q-counter {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 2px;
+        }
+        /* Results screen */
+        
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .results-screen.show {
+            display: block;
+        }
+        
+        .results-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(20px, 4vw, 36px);
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: var(--accent);
+            text-shadow: var(--glow);
+            margin-bottom: 10px;
+        }
+        
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            box-shadow: var(--glow), inset 0 0 40px rgba(0, 212, 255, 0.05);
+            position: relative;
+        }
+        
+        .score-pct {
+            font-family: 'Orbitron', monospace;
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--accent);
+        }
+        
+        .score-sub {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+        
+        .score-grade {
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 4px;
+        }
+        
+        .grade-pass {
+            color: var(--green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .grade-fail {
+            color: var(--red);
+            text-shadow: 0 0 20px rgba(255, 56, 96, 0.4);
+        }
+        
+        .results-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .r-stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 20px 30px;
+            text-align: center;
+        }
+        
+        .r-stat-val {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .r-stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        /* Quiz question map */
+        
+        .q-map {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 36px;
+        }
+        
+        .q-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 2px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .q-dot:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .q-dot.dot-correct {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(0, 255, 136, 0.08);
+        }
+        
+        .q-dot.dot-wrong {
+            border-color: var(--red);
+            color: var(--red);
+            background: rgba(255, 56, 96, 0.08);
+        }
+        
+        .q-dot.dot-active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .q-dot.dot-skipped {
+            border-color: var(--muted);
+            color: var(--muted);
+            opacity: 0.5;
+        }
+        
+        #quiz-main {
+            display: block;
+        }
+        
+        @media (max-width: 600px) {
+            .question-card {
+                padding: 22px 18px;
+            }
+            .stats-bar {
+                gap: 20px;
+            }
+            .btn {
+                padding: 10px 18px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-text">CEH<span>.</span>PREP</div>
+        <div class="subtitle">Certified Ethical Hacker // Practice Terminal</div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-val" id="stat-total">10</div>
+            <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val correct" id="stat-correct">0</div>
+            <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val wrong" id="stat-wrong">0</div>
+            <div class="stat-label">Wrong</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="stat-remain">10</div>
+            <div class="stat-label">Remaining</div>
+        </div>
+    </div>
+
+    <div class="progress-wrap">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <main>
+        <div id="quiz-main">
+            <!-- Question map -->
+            <div class="q-map" id="q-map"></div>
+
+            <!-- Question card -->
+            <div class="question-card" id="question-card">
+                <div class="q-meta" id="q-meta"></div>
+                <div class="q-text" id="q-text"></div>
+                <div class="options" id="options"></div>
+                <div class="result-badge" id="result-badge"></div>
+                <div class="explanation" id="explanation">
+                    <div class="exp-label">// Explanation</div>
+                    <div id="exp-text"></div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev" onclick="navigate(-1)" disabled>◀ Prev</button>
+                <span class="q-counter" id="q-counter">01 / 10</span>
+                <button class="btn" id="btn-next" onclick="navigate(1)">Next ▶</button>
+            </div>
+        </div>
+
+        <!-- Results screen -->
+        <div class="results-screen" id="results-screen">
+            <div class="results-title">// SCAN COMPLETE</div>
+            <div class="score-circle">
+                <div class="score-pct" id="res-pct">0%</div>
+                <div class="score-sub">SCORE</div>
+            </div>
+            <div class="score-grade" id="res-grade"></div>
+            <div class="results-grid">
+                <div class="r-stat">
+                    <div class="r-stat-val" style="color:var(--green)" id="res-correct">0</div>
+                    <div class="r-stat-label">Correct</div>
+                </div>
+                <div class="r-stat">
+                    <div class="r-stat-val" style="color:var(--red)" id="res-wrong">0</div>
+                    <div class="r-stat-label">Wrong</div>
+                </div>
+                <div class="r-stat">
+                    <div class="r-stat-val" style="color:var(--muted)" id="res-skip">0</div>
+                    <div class="r-stat-label">Skipped</div>
+                </div>
+            </div>
+            <button class="btn" onclick="restartQuiz()" style="margin:0 auto;display:block">↺ Restart Quiz</button>
+        </div>
+    </main>
+
+    <script>
+        // =============================================
+        // QUESTIONS DATABASE — add more questions here
+        // =============================================
+        const questions = [{
+            topic: "Topic 1",
+            text: "In this form of encryption algorithm, every individual block contains 64-bit data, and three keys are used, where each key consists of 56 bits. Which is this encryption algorithm?",
+            options: ["IDEA", "Triple Data Encryption Standard", "AES", "MD5 encryption algorithm"],
+            answer: 1,
+            explanation: "3DES (Triple DES) uses three 56-bit keys and encrypts data in 64-bit blocks, applying the DES cipher three times to each block. This gives it an effective key length of 168 bits."
+        }, {
+            topic: "Topic 1",
+            text: "John is investigating web-application firewall logs and observes that someone is attempting to inject malicious script tags into input fields. What type of attack is this?",
+            options: ["SQL injection", "Buffer overflow", "CSRF", "XSS"],
+            answer: 3,
+            explanation: "Cross-Site Scripting (XSS) attacks involve injecting malicious scripts (typically JavaScript inside <script> tags) into web pages viewed by other users. The attacker exploits the browser's trust in the website."
+        }, {
+            topic: "Topic 1",
+            text: "John, a professional hacker, performs a network attack on a renowned organization and gains unauthorized access to the target network. He remains in the network without being detected for a long time and obtains sensitive information without sabotaging the organization. Which of the following attack techniques is used by John?",
+            options: ["Insider threat", "Diversion theft", "Spear-phishing sites", "Advanced persistent threat"],
+            answer: 3,
+            explanation: "An Advanced Persistent Threat (APT) is a prolonged, targeted cyberattack in which an intruder gains access to a network and remains undetected for an extended period. The goal is typically data exfiltration rather than immediate damage."
+        }, {
+            topic: "Topic 1",
+            text: "You are attempting to run an Nmap port scan on a web server. Which of the following commands would result in a scan of common ports with the least amount of noise in order to evade IDS?",
+            options: ["nmap -A -Pn", "nmap -sP -p-65535 -T5", "nmap -sT -O -T0", "nmap -A --host-timeout 99 -T1"],
+            answer: 2,
+            explanation: "nmap -sT -O -T0 uses a TCP connect scan with OS detection at the slowest timing template (T0 = Paranoid). This produces the least noise and is hardest for an IDS to detect due to extremely slow packet transmission."
+        }, {
+            topic: "Topic 1",
+            text: "This wireless security protocol allows 192-bit minimum-strength security protocols and cryptographic tools to protect sensitive data, such as GCMP-256, HMAC-SHA384, and ECDSA using a 384-bit elliptic curve. Which is this wireless security protocol?",
+            options: ["WPA3-Personal", "WPA3-Enterprise", "WPA2-Enterprise", "WPA2-Personal"],
+            answer: 1,
+            explanation: "WPA3-Enterprise offers a 192-bit security mode using GCMP-256 for encryption, HMAC-SHA-384 for key derivation and confirmation, and ECDSA-384 for key establishment. This is designed for high-security environments."
+        }, {
+            topic: "Topic 1",
+            text: "What are common files on a web server that can be misconfigured and provide useful information for a hacker such as verbose error messages?",
+            options: ["httpd.conf", "administration.config", "php.ini", "idq.dll"],
+            answer: 2,
+            explanation: "php.ini is the PHP configuration file. Misconfigurations such as display_errors=On can expose verbose error messages, server paths, and version information to attackers, aiding in reconnaissance."
+        }, {
+            topic: "Topic 1",
+            text: "Gerard used an automated tool that can retrieve information about DNS zone data including DNS domain names, computer names, IP addresses, DNS records, and network Whois records. What is the tool employed by Gerard?",
+            options: ["Towelroot", "Knative", "zANTI", "Bluto"],
+            answer: 3,
+            explanation: "Bluto is a DNS reconnaissance tool that automates the process of gathering DNS information, performing zone transfers, reverse lookups, and WHOIS queries. It is commonly used during the footprinting phase of ethical hacking."
+        }, {
+            topic: "Topic 1",
+            text: "Tony is a penetration tester who found a list of hashed passwords after gaining initial access. Which of the following tools would NOT be useful for cracking the hashed passwords?",
+            options: ["Hashcat", "John the Ripper", "THC-Hydra", "netcat"],
+            answer: 3,
+            explanation: "Netcat (nc) is a networking utility for reading/writing data across network connections — it is not a password cracker. Hashcat and John the Ripper are dedicated hash cracking tools; THC-Hydra is an online brute-force tool for login services."
+        }, {
+            topic: "Topic 1",
+            text: "Which of the following Google advanced search operators helps an attacker in gathering information about websites that are similar to a specified target URL?",
+            options: ["[inurl:]", "[info:]", "[site:]", "[related:]"],
+            answer: 3,
+            explanation: "The related: operator in Google finds websites that are similar or related to a given URL. For example, related:example.com returns sites with similar content or purpose, which is useful in competitive intelligence and footprinting."
+        }, {
+            topic: "Topic 1",
+            text: "You are a penetration tester working to test the user awareness of the employees of the client XYZ. You harvested two employees' emails from public sources and are creating a client-side backdoor to send it to the employees via email. Which stage of the cyber kill chain are you at?",
+            options: ["Reconnaissance", "Weaponization", "Command and control", "Exploitation"],
+            answer: 1,
+            explanation: "The Weaponization stage of the Cyber Kill Chain involves creating a deliverable malicious payload (backdoor/exploit). Pairing a remote access trojan with an exploit into a deliverable (e.g., email attachment) defines this phase. Reconnaissance was already done when emails were harvested."
+        }, {
+            topic: "Topic 1",
+            text: "While performing an Nmap scan against a host, Paola determines the existence of a firewall. In an attempt to determine whether the firewall is stateful or stateless, which of the following options would be best to use?",
+            options: ["-sA", "-sX", "-sT", "-sF"],
+            answer: 0,
+            explanation: "nmap -sA (ACK scan) is used to determine whether a firewall is stateful or stateless. It sends ACK packets; a stateful firewall will block them (no response or ICMP unreachable), while a stateless firewall or no firewall will return RST packets since no session exists."
+        }, {
+            topic: "Topic 1",
+            text: "A newly joined employee, Janet, has been allocated an existing system used by a previous employee. Martin, the administrator, assessed the system and found vulnerabilities such as native configuration tables, incorrect registry or file permissions, and software configuration errors. What is the type of vulnerability assessment performed by Martin?",
+            options: ["Database assessment", "Host-based assessment", "Credentialed assessment", "Distributed assessment"],
+            answer: 1,
+            explanation: "A host-based assessment focuses on vulnerabilities within a specific system, including user directories, registry settings, file permissions, and software configurations. It examines the internal state of a host rather than network-level exposure."
+        }, {
+            topic: "Topic 1",
+            text: "Jane, an ethical hacker, copied the entire website and its content onto a local drive to view the complete profile of the site's directory structure, file structure, external links, images, and web pages. What is the attack technique employed by Jane?",
+            options: ["Session hijacking", "Website mirroring", "Website defacement", "Web cache poisoning"],
+            answer: 1,
+            explanation: "Website mirroring involves creating a local replica of an entire website, including its structure and content. Tools like HTTrack are used for this purpose. It helps attackers map the site's structure and identify potential attack vectors without directly interacting with the live server repeatedly."
+        }, {
+            topic: "Topic 1",
+            text: "James, a pen tester, scanned the organization by building an inventory of protocols to detect which ports are attached to services like email, web, or database servers. After identifying the services, he executed only relevant vulnerability tests for each machine. What type of vulnerability assessment solution did James employ?",
+            options: ["Service-based solutions", "Product-based solutions", "Tree-based assessment", "Inference-based assessment"],
+            answer: 3,
+            explanation: "Inference-based assessment builds an inventory of protocols and services on target machines, then selects and runs only the relevant vulnerability tests based on what services are found. This makes it efficient and targeted compared to running all tests blindly."
+        }, {
+            topic: "Topic 1",
+            text: "Taylor, a security professional, uses a tool to monitor her company's website, analyze its traffic, and track the geographical location of users visiting the site. Which tool did Taylor employ?",
+            options: ["Webroot", "Web-Stat", "WebSite-Watcher", "WAFW00F"],
+            answer: 1,
+            explanation: "Web-Stat is a web analytics tool that provides real-time website traffic monitoring, visitor behavior analysis, and geographical tracking of users. It is used by security and marketing professionals to understand who is visiting their site."
+        }, {
+            topic: "Topic 1",
+            text: "Becky runs a Whois search on an organization's IP and notices it was allocated to a location in Le Havre, France. Which regional Internet registry should Becky consult for detailed information?",
+            options: ["ARIN", "LACNIC", "APNIC", "RIPE"],
+            answer: 3,
+            explanation: "RIPE NCC (Réseaux IP Européens Network Coordination Centre) is the Regional Internet Registry (RIR) responsible for IP address allocation in Europe, the Middle East, and parts of Central Asia. Since the IP is allocated to France, RIPE is the correct registry to query."
+        }, {
+            topic: "Topic 1",
+            text: "Harry targets an organization by sending spear-phishing emails and exploiting vulnerabilities on public servers, successfully deploying malware to establish an outbound connection. What APT lifecycle phase is Harry currently executing?",
+            options: ["Initial intrusion", "Persistence", "Cleanup", "Preparation"],
+            answer: 0,
+            explanation: "The Initial Intrusion phase of the APT lifecycle is when the attacker first gains access to the target network using techniques like spear-phishing, exploiting public-facing servers, or watering hole attacks. Successfully deploying malware to establish a connection marks this phase."
+        }, {
+            topic: "Topic 1",
+            text: "Robin plugged a rogue switch into an unused LAN port with a priority lower than any other switch in the network, making it the root bridge to sniff all network traffic. What is the attack performed by Robin?",
+            options: ["ARP spoofing attack", "STP attack", "DNS poisoning attack", "VLAN hopping attack"],
+            answer: 1,
+            explanation: "An STP (Spanning Tree Protocol) attack involves an attacker introducing a rogue switch with a manipulated bridge priority to become the root bridge. Once elected root bridge, all traffic flows through the attacker's switch, enabling sniffing of network traffic."
+        }, {
+            topic: "Topic 1",
+            text: "An attacker uses a Wi-Fi Pineapple to run an access point with a legitimate-looking SSID for a nearby business in order to capture the wireless password. What kind of attack is this?",
+            options: ["MAC spoofing attack", "War driving attack", "Phishing attack", "Evil-twin attack"],
+            answer: 3,
+            explanation: "An Evil-Twin attack involves creating a rogue wireless access point that mimics a legitimate one (same SSID). Victims connect to the fake AP, allowing the attacker to intercept credentials and traffic. Wi-Fi Pineapple is a common tool used to conduct such attacks."
+        }, {
+            topic: "Topic 1",
+            text: "CyberTech Inc. experienced SQL injection attacks. Bob, a security professional, adopted a practice where only approved entities such as data type, range, size, and value are accepted. What defensive technique did Bob employ?",
+            options: ["Whitelist validation", "Output encoding", "Blacklist validation", "Enforce least privileges"],
+            answer: 0,
+            explanation: "Whitelist validation (also called allowlist validation) defines a set of approved, known-good inputs and rejects everything else. This is more secure than blacklist validation, which tries to block known-bad inputs but can miss new attack patterns. It is a primary defense against SQL injection."
+        }];
+
+        // =============================================
+        // QUIZ STATE
+        // =============================================
+        let current = 0;
+        let answers = new Array(questions.length).fill(null); // null = unanswered
+        let answered = new Array(questions.length).fill(false);
+
+        // =============================================
+        // RENDER
+        // =============================================
+        function renderQuestionMap() {
+            const map = document.getElementById('q-map');
+            map.innerHTML = '';
+            questions.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'q-dot';
+                dot.textContent = String(i + 1).padStart(2, '0');
+                if (i === current) dot.classList.add('dot-active');
+                else if (answered[i]) {
+                    dot.classList.add(answers[i] === questions[i].answer ? 'dot-correct' : 'dot-wrong');
+                } else {
+                    dot.classList.add('dot-skipped');
+                }
+                dot.onclick = () => goTo(i);
+                map.appendChild(dot);
+            });
+        }
+
+        function renderQuestion() {
+            const q = questions[current];
+            const isAnswered = answered[current];
+
+            document.getElementById('q-meta').textContent = `// Q${String(current+1).padStart(2,'0')} — ${q.topic}`;
+            document.getElementById('q-text').textContent = q.text;
+            document.getElementById('q-counter').textContent = `${String(current+1).padStart(2,'0')} / ${String(questions.length).padStart(2,'0')}`;
+
+            const optionsEl = document.getElementById('options');
+            optionsEl.innerHTML = '';
+            const keys = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option';
+                btn.innerHTML = `<span class="opt-key">${keys[i]}</span><span>${opt}</span>`;
+                btn.disabled = isAnswered;
+
+                if (isAnswered) {
+                    if (i === q.answer) btn.classList.add('correct');
+                    else if (i === answers[current]) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => selectAnswer(i);
+                }
+
+                optionsEl.appendChild(btn);
+            });
+
+            // Result badge
+            const badge = document.getElementById('result-badge');
+            badge.className = 'result-badge';
+            if (isAnswered) {
+                const isCorrect = answers[current] === q.answer;
+                badge.classList.add('show', isCorrect ? 'correct-badge' : 'wrong-badge');
+                badge.textContent = isCorrect ? '✓ CORRECT' : '✗ INCORRECT';
+            }
+
+            // Explanation
+            const expEl = document.getElementById('explanation');
+            const expText = document.getElementById('exp-text');
+            if (isAnswered) {
+                expText.textContent = q.explanation;
+                expEl.classList.add('show');
+            } else {
+                expEl.classList.remove('show');
+            }
+
+            // Nav buttons
+            document.getElementById('btn-prev').disabled = current === 0;
+            document.getElementById('btn-next').textContent = current === questions.length - 1 ? 'Results ▶' : 'Next ▶';
+
+            // Re-animate
+            const card = document.getElementById('question-card');
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = 'slideIn 0.35s ease';
+
+            renderQuestionMap();
+            updateStats();
+            updateProgress();
+        }
+
+        function selectAnswer(idx) {
+            if (answered[current]) return;
+            answers[current] = idx;
+            answered[current] = true;
+            renderQuestion();
+        }
+
+        function navigate(dir) {
+            const next = current + dir;
+            if (next < 0) return;
+            if (next >= questions.length) {
+                showResults();
+                return;
+            }
+            goTo(next);
+        }
+
+        function goTo(idx) {
+            current = idx;
+            renderQuestion();
+        }
+
+        function updateStats() {
+            const correct = answers.filter((a, i) => a !== null && a === questions[i].answer).length;
+            const wrong = answers.filter((a, i) => a !== null && a !== questions[i].answer).length;
+            const remain = questions.length - answered.filter(Boolean).length;
+
+            document.getElementById('stat-correct').textContent = correct;
+            document.getElementById('stat-wrong').textContent = wrong;
+            document.getElementById('stat-remain').textContent = remain;
+        }
+
+        function updateProgress() {
+            const pct = (answered.filter(Boolean).length / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = pct + '%';
+        }
+
+        function showResults() {
+            document.getElementById('quiz-main').style.display = 'none';
+            const res = document.getElementById('results-screen');
+            res.classList.add('show');
+
+            const correct = answers.filter((a, i) => a !== null && a === questions[i].answer).length;
+            const wrong = answers.filter((a, i) => a !== null && a !== questions[i].answer).length;
+            const skip = answered.filter(v => !v).length;
+            const pct = Math.round((correct / questions.length) * 100);
+
+            document.getElementById('res-pct').textContent = pct + '%';
+            document.getElementById('res-correct').textContent = correct;
+            document.getElementById('res-wrong').textContent = wrong;
+            document.getElementById('res-skip').textContent = skip;
+
+            const grade = document.getElementById('res-grade');
+            if (pct >= 70) {
+                grade.textContent = '// ACCESS GRANTED';
+                grade.className = 'score-grade grade-pass';
+            } else {
+                grade.textContent = '// ACCESS DENIED';
+                grade.className = 'score-grade grade-fail';
+            }
+
+            document.getElementById('progress-fill').style.width = '100%';
+            updateStats();
+        }
+
+        function restartQuiz() {
+            current = 0;
+            answers = new Array(questions.length).fill(null);
+            answered = new Array(questions.length).fill(false);
+            document.getElementById('results-screen').classList.remove('show');
+            document.getElementById('quiz-main').style.display = 'block';
+            renderQuestion();
+        }
+
+        // Init
+        document.getElementById('stat-total').textContent = questions.length;
+        document.getElementById('stat-remain').textContent = questions.length;
+        renderQuestion();
+    </script>
+</body>
+
+</html>
